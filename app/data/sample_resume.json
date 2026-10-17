@@ -1,0 +1,28 @@
+{
+    "name": "Rahul Sharma",
+    "email": "rahul@example.com",
+    "phone": "9999999999",
+
+    "skills": [
+        "Python",
+        "FastAPI",
+        "Git",
+        "SQL"
+    ],
+
+    "experience": "Backend Developer Intern",
+
+    "education": [
+        "B.Tech Computer Science"
+    ],
+
+    "projects": [
+        "FastAPI REST API",
+        "AI Resume Analyzer"
+    ],
+
+    "resume_score": 82,
+
+    "summary":
+    "Backend developer skilled in Python APIs and databases."
+}

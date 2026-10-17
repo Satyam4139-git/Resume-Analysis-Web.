@@ -1,0 +1,24 @@
+/* =========================================================
+   CareerPilot AI - brand theme
+   One palette shared by the website AND the backend-served
+   pages (API docs, error pages). Change colors here only.
+========================================================= */
+
+:root {
+    --brand-pink:       #e8337c;
+    --brand-pink-deep:  #d6296f;
+    --brand-pink-dark:  #b81f5c;
+    --brand-magenta:    #a1328f;
+    --brand-purple:     #5b2fa5;
+    --brand-indigo:     #3b36b2;
+    --brand-periwinkle: #7c8cdb;
+
+    --brand-ink:        #1f1b3a;
+    --brand-muted:      #625d7c;
+    --brand-line:       #eadff0;
+    --brand-tint:       #fdecf3;
+    --brand-canvas:     #faf6fb;
+
+    --brand-gradient: linear-gradient(110deg, #ef3a7b 0%, #b5348a 36%, #6b30a6 66%, #3b36b2 100%);
+    --brand-font: "Quicksand", "Nunito", ui-rounded, "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+}

@@ -1,0 +1,18 @@
+venv/
+.env
+
+__pycache__/
+*.pyc
+
+uploads/
+logs/
+
+.vscode/
+
+# backups and local data
+*.backup
+*-backup
+*_backup.*
+*.db
+.pytest_cache/
+.DS_Store

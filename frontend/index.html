@@ -1,0 +1,1563 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="CareerPilot AI - Resume Analysis, ATS Scoring, Job Matching and Application Tracking"
+    >
+
+    <meta name="theme-color" content="#b5348a">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A4%96%3C/text%3E%3C/svg%3E">
+    <title>CareerPilot AI | Your Career Workspace</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="theme.css?v=20261017b">
+    <link rel="stylesheet" href="style.css?v=20261017b">
+
+</head>
+
+
+<body>
+
+    <!-- =====================================================
+         BACKEND ERROR
+    ====================================================== -->
+
+    <div
+        id="backend-error"
+        class="backend-error"
+        style="display: none;"
+    ></div>
+
+
+    <!-- =====================================================
+         JOB SEARCH  (public landing page)
+    ====================================================== -->
+
+    <div id="jx-home" class="jx-home">
+
+        <div id="jx-demo-banner" class="jx-demo-banner" hidden>
+            Demo mode: you are looking at sample jobs, not real listings.
+        </div>
+
+        <div class="jx-top">
+            <svg class="jx-art" viewBox="0 0 600 420" aria-hidden="true" focusable="false"><polygon points="80,300 330,425.0 330,451.0 80,326" fill="#fff" fill-opacity="0.09"/><polygon points="580,300 330,425.0 330,451.0 580,326" fill="#fff" fill-opacity="0.15"/><polygon points="330,175.0 580,300 330,425.0 80,300" fill="#fff" fill-opacity="0.23"/><polygon points="130,262 170,282.0 170,322.0 130,302" fill="#fff" fill-opacity="0.14"/><polygon points="210,262 170,282.0 170,322.0 210,302" fill="#fff" fill-opacity="0.25"/><polygon points="170,242.0 210,262 170,282.0 130,262" fill="#fff" fill-opacity="0.38"/><polygon points="195,236 235,256.0 235,326.0 195,306" fill="#fff" fill-opacity="0.14"/><polygon points="275,236 235,256.0 235,326.0 275,306" fill="#fff" fill-opacity="0.25"/><polygon points="235,216.0 275,236 235,256.0 195,236" fill="#fff" fill-opacity="0.38"/><polygon points="260,210 300,230.0 300,330.0 260,310" fill="#fff" fill-opacity="0.14"/><polygon points="340,210 300,230.0 300,330.0 340,310" fill="#fff" fill-opacity="0.25"/><polygon points="300,190.0 340,210 300,230.0 260,210" fill="#fff" fill-opacity="0.38"/><polygon points="325,184 365,204.0 365,334.0 325,314" fill="#fff" fill-opacity="0.14"/><polygon points="405,184 365,204.0 365,334.0 405,314" fill="#fff" fill-opacity="0.25"/><polygon points="365,164.0 405,184 365,204.0 325,184" fill="#fff" fill-opacity="0.38"/><polygon points="390,158 430,178.0 430,338.0 390,318" fill="#fff" fill-opacity="0.14"/><polygon points="470,158 430,178.0 430,338.0 470,318" fill="#fff" fill-opacity="0.25"/><polygon points="430,138.0 470,158 430,178.0 390,158" fill="#fff" fill-opacity="0.38"/><rect x="95" y="70" width="150" height="86" rx="12" fill="#fff" fill-opacity=".20"/><rect x="111" y="88" width="70" height="8" rx="4" fill="#fff" fill-opacity=".55"/><rect x="111" y="108" width="118" height="6" rx="3" fill="#fff" fill-opacity=".35"/><rect x="111" y="124" width="96" height="6" rx="3" fill="#fff" fill-opacity=".35"/><circle cx="470" cy="96" r="46" fill="#fff" fill-opacity=".16"/><circle cx="470" cy="96" r="26" fill="#fff" fill-opacity=".20"/><path d="M90 330 L170 300 L250 318 L340 270 L430 285 L520 232" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+
+        <header class="jx-topbar">
+            <a href="./" class="jx-brand" aria-label="CareerPilot AI home">
+                <span class="jx-brand-icon" aria-hidden="true">◎</span>
+                <span>CareerPilot<em>AI</em></span>
+            </a>
+
+            <nav class="jx-nav" aria-label="Main">
+                <a href="./" class="jx-nav-link is-active">Find Jobs</a>
+                <button type="button" class="jx-nav-link" data-needs-login>Resume Analyzer</button>
+                <button type="button" class="jx-nav-link" data-needs-login>Application Tracker</button>
+            </nav>
+
+            <div class="jx-topbar-actions">
+                <button type="button" id="jx-saved-toggle" class="jx-top-button" aria-pressed="false">
+                    ♡<span class="jx-saved-label"> Saved</span> (<span id="jx-saved-count">0</span>)
+                </button>
+                <button type="button" id="jx-cta-button" class="jx-cta" data-needs-login>
+                    <span aria-hidden="true">+</span> Analyze Resume
+                </button>
+                <button type="button" class="jx-top-button jx-top-link jx-signup" data-needs-login>
+                    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M16 7l3 3M14 9l2 2"/></svg>
+                    Sign Up
+                </button>
+                <button type="button" id="jx-auth-button" class="jx-top-button jx-top-link" data-mode="signin">
+                    Login
+                </button>
+            </div>
+        </header>
+
+        <section class="jx-hero" aria-labelledby="jx-title">
+            <h1 id="jx-title">The Easiest Way to Get Your New Job</h1>
+            <p>Find jobs, internships &amp; career opportunities. Then check how your resume matches.</p>
+
+            <form id="jx-form" class="jx-search" role="search" autocomplete="off">
+                <div class="jx-field">
+                    <label for="jx-q" class="jx-sr">Job title or skill</label>
+                    <svg class="jx-field-icon" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+                    <input id="jx-q" type="search" placeholder="Job title, keywords or skill" maxlength="80" enterkeyhint="search">
+                </div>
+
+                <div class="jx-field">
+                    <label for="jx-location" class="jx-sr">City</label>
+                    <svg class="jx-field-icon" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
+                    <input id="jx-location" type="text" list="jx-city-list" placeholder="City, e.g. Kolkata" maxlength="60" enterkeyhint="search">
+                    <datalist id="jx-city-list"></datalist>
+                </div>
+
+                <button type="submit" class="jx-search-button" aria-label="Search jobs"><span class="jx-search-text">Search jobs</span><svg class="jx-search-glyph" viewBox="0 0 24 24" width="26" height="26" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button>
+            </form>
+
+            <div class="jx-chips-row">
+                <span class="jx-chips-label">Browse job offers by</span>
+                <div id="jx-chips" class="jx-chips"></div>
+            </div>
+
+            <button type="button" class="jx-hero-cta" data-needs-login>+ Analyze my resume</button>
+        </section>
+
+        </div>
+
+        <section class="jx-filters" aria-label="Filters">
+            <div class="jx-filter">
+                <label for="jx-level">Experience</label>
+                <select id="jx-level">
+                    <option value="">Any level</option>
+                    <option value="fresher">Fresher (0–1 yr)</option>
+                    <option value="junior">Junior (1–3 yrs)</option>
+                    <option value="mid">Mid (3–6 yrs)</option>
+                    <option value="senior">Senior (6+ yrs)</option>
+                </select>
+            </div>
+
+            <div class="jx-filter">
+                <label for="jx-posted">Date posted</label>
+                <select id="jx-posted">
+                    <option value="">Any time</option>
+                    <option value="1">Last 24 hours</option>
+                    <option value="7">Last 7 days</option>
+                    <option value="30">Last 30 days</option>
+                </select>
+            </div>
+
+            <div class="jx-filter">
+                <label for="jx-sort">Sort by</label>
+                <select id="jx-sort">
+                    <option value="relevance">Best match</option>
+                    <option value="date">Newest first</option>
+                </select>
+            </div>
+
+            <label class="jx-toggle" for="jx-remote">
+                <input id="jx-remote" type="checkbox">
+                <span>🏠 Remote only</span>
+            </label>
+
+            <button type="button" id="jx-clear" class="jx-link-button">Clear filters</button>
+        </section>
+
+        <main class="jx-main" aria-labelledby="jx-count">
+
+            <div id="jx-results-head" class="jx-results-head" hidden>
+                <div>
+                    <h2 id="jx-count">Jobs</h2>
+                    <p id="jx-count-sub"></p>
+                </div>
+            </div>
+
+            <p id="jx-status" class="jx-sr" role="status" aria-live="polite"></p>
+
+            <div id="jx-skeletons" class="jx-skeletons" hidden></div>
+
+            <div id="jx-results" class="jx-results"></div>
+
+            <div id="jx-state" class="jx-state"></div>
+
+            <div class="jx-more-wrap">
+                <button type="button" id="jx-more" class="jx-btn jx-more" hidden>Load more jobs</button>
+            </div>
+
+            <div id="jx-welcome" class="jx-welcome">
+                <div class="jx-welcome-card">
+                    <span aria-hidden="true">✨</span>
+                    <h2>Start with a job title or skill</h2>
+                    <p>Add a city to narrow it down, or leave it empty to search everywhere. Use the filters to match your experience.</p>
+                </div>
+            </div>
+        </main>
+
+        <footer class="jx-footer">
+            <p>Applying happens on the original job site. CareerPilot AI only helps you find the jobs.</p>
+        </footer>
+    </div>
+
+
+    <!-- =====================================================
+         LOGIN
+    ====================================================== -->
+
+    <section
+        id="login-section"
+        class="login-section"
+        style="display: none;"
+    >
+
+        <div class="login-background-shape shape-one"></div>
+        <div class="login-background-shape shape-two"></div>
+
+        <div class="login-card">
+
+            <div class="logo-circle">
+                🤖
+            </div>
+
+            <div class="login-badge">
+                AI POWERED CAREER PLATFORM
+            </div>
+
+            <h1>
+                Build Your Career<br>
+                <span>Smarter With AI</span>
+            </h1>
+
+            <p class="login-description">
+                Analyze your resume, discover relevant jobs,
+                improve your skills and track applications.
+            </p>
+
+            <button
+                type="button"
+                id="google-login-button"
+                class="google-button"
+            >
+
+                <span class="google-icon">
+                    G
+                </span>
+
+                <span>
+                    Continue with Google
+                </span>
+
+            </button>
+
+            <div class="login-features">
+
+                <span>✓ Resume Analysis</span>
+                <span>✓ ATS Score</span>
+                <span>✓ Job Matching</span>
+                <span>✓ AI Career Tools</span>
+
+            </div>
+
+            <button type="button" class="jx-back-link" onclick="showJobsHome()">
+                ← Back to job search
+            </button>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         DASHBOARD
+    ====================================================== -->
+
+    <section
+        id="dashboard-section"
+        style="display: none;"
+    >
+
+
+        <!-- =================================================
+             HEADER
+        ================================================== -->
+
+        <header class="dashboard-header">
+
+            <div class="header-brand">
+
+                <div class="brand-icon">
+                    🤖
+                </div>
+
+                <div class="brand-text">
+
+                    <h1>
+                        CareerPilot AI
+                    </h1>
+
+                    <p>
+                        Your resume and job-search workspace
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <nav class="dashboard-nav">
+
+                <a
+                    href="#"
+                    class="nav-button"
+                    onclick="showJobsHome(); return false;"
+                >
+                    🔍 Find Jobs
+                </a>
+
+                <a
+                    href="#upload-panel"
+                    class="nav-button"
+                >
+                    ▤ Resume
+                </a>
+
+                <a
+                    href="#ats-panel"
+                    class="nav-button"
+                >
+                    ◎ ATS Score
+                </a>
+
+                <a
+                    href="#application-tracker-panel"
+                    class="nav-button"
+                >
+                    ▣ Tracker
+                </a>
+
+            </nav>
+
+
+            <div
+                id="user-section"
+                class="user-section"
+            >
+
+                <img
+                    id="user-picture"
+                    src=""
+                    alt="User"
+                    class="user-picture"
+                    style="display: none;"
+                >
+
+                <div class="user-info">
+
+                    <strong id="user-name">
+                        User
+                    </strong>
+
+                    <small id="user-email">
+                    </small>
+
+                </div>
+
+                <button
+                    type="button"
+                    id="logout-button"
+                    class="logout-button"
+                >
+                    🚪 Logout
+                </button>
+
+            </div>
+
+        </header>
+
+
+
+        <!-- =================================================
+             QUICK ACTION BAR
+        ================================================== -->
+
+        <div class="quick-action-wrapper">
+
+            <div class="quick-action-bar">
+
+                <div class="quick-action-info">
+
+                    <span class="quick-action-icon">
+                        ⚡
+                    </span>
+
+                    <div>
+
+                        <strong>
+                            Career Dashboard
+                        </strong>
+
+                        <small>
+                            Analyze → Improve → Apply → Track
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="quick-actions">
+
+                    <a
+                        href="#application-tracker-panel"
+                        class="action-button"
+                    >
+                        📋 Applications
+                    </a>
+
+                    <button
+                        type="button"
+                        id="print-report-button"
+                        class="action-button"
+                        onclick="window.print()"
+                        hidden
+                    >
+                        🖨️ Print Report
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             MAIN CONTENT
+        ================================================== -->
+
+        <main class="container">
+
+
+            <!-- =================================================
+                 RESUME UPLOAD
+            ================================================== -->
+
+            <section
+                class="panel"
+                id="upload-panel"
+            >
+
+                <div class="section-title">
+
+                    <span class="section-icon">
+                        ▤
+                    </span>
+
+                    <div>
+
+                        <span class="section-label">
+                            STEP 01
+                        </span>
+
+                        <h2>
+                            Upload Your Resume
+                        </h2>
+
+                        <p>
+                            Upload your PDF or DOCX resume and
+                            get a complete AI-powered career analysis.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Upload Area -->
+
+                <div class="upload-area">
+
+                    <input
+                        type="file"
+                        id="resume-file"
+                        accept=".pdf,.docx"
+                    >
+
+                    <label
+                        for="resume-file"
+                        class="file-label"
+                    >
+
+                        <span class="upload-icon">
+                            ☁️
+                        </span>
+
+                        <strong>
+                            Choose your resume
+                        </strong>
+
+                        <small>
+                            Click here to browse PDF or DOCX files
+                        </small>
+
+                        <span class="upload-hint">
+                            Supported formats: PDF, DOCX
+                        </span>
+
+                    </label>
+
+                </div>
+
+
+                <div class="file-status-row">
+
+                    <p
+                        id="selected-file-name"
+                        class="selected-file"
+                    >
+                        No file selected.
+                    </p>
+
+                    <p
+                        id="resume-status"
+                        class="status-message"
+                    ></p>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     TARGET JOB
+                ================================================== -->
+
+                <details class="target-job-form">
+
+                    <summary class="target-summary">🎯 Compare with a specific job <span>(optional)</span></summary>
+
+                    <div class="section-title small">
+
+                        <span class="section-icon">
+                            🎯
+                        </span>
+
+                        <div>
+
+                            <span class="section-label">
+                                OPTIONAL
+                            </span>
+
+                            <h3>
+                                Target Job Analysis
+                            </h3>
+
+                            <p>
+                                Compare your resume against a
+                                specific company, role and job description.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+
+                            <label for="company">
+                                Company
+                            </label>
+
+                            <input
+                                type="text"
+                                id="company"
+                                placeholder="e.g. Google, TCS, Infosys"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="role">
+                                Job Role
+                            </label>
+
+                            <input
+                                type="text"
+                                id="role"
+                                placeholder="e.g. Python Developer"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="job-description">
+                            Job Description
+                        </label>
+
+                        <textarea
+                            id="job-description"
+                            rows="8"
+                            placeholder="Paste the complete job description here..."
+                        ></textarea>
+
+                    </div>
+
+
+                    <div class="target-actions">
+
+                        <button
+                            type="button"
+                            class="secondary-button"
+                            onclick="
+                                document.getElementById('company').value='';
+                                document.getElementById('role').value='';
+                                document.getElementById('job-description').value='';
+                            "
+                        >
+                            🧹 Clear Target Job
+                        </button>
+
+                    </div>
+
+                </details>
+
+                <div class="analyze-row">
+
+                    <button
+                        type="button"
+                        id="analyze-button"
+                        class="primary-button primary-large"
+                    >
+                        🚀 Analyze Resume
+                    </button>
+
+                </div>
+
+
+                <!-- Loading -->
+
+                <div
+                    id="loading"
+                    style="display: none;"
+                >
+
+                    <div class="loading-box">
+
+                        <div class="spinner"></div>
+
+                        <div>
+
+                            <strong>
+                                AI Analysis in Progress
+                            </strong>
+
+                            <p id="loading-message">
+                                Uploading and analyzing your resume...
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 RESULTS
+            ================================================== -->
+
+            <section
+                id="results-section"
+                style="display: none;"
+            >
+
+
+                <!-- =================================================
+                     CAREER OPPORTUNITIES
+                ================================================== -->
+
+                <section
+                    class="panel"
+                    id="career-panel"
+                >
+
+                    <div class="section-title">
+
+                        <span class="section-icon">
+                            💼
+                        </span>
+
+                        <div>
+
+                            <span class="section-label">
+                                CAREER MATCHING
+                            </span>
+
+                            <h2>
+                                Recommended Career Opportunities
+                            </h2>
+
+                            <p>
+                                Roles that align with your skills,
+                                experience and career profile.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div
+                        id="career-opportunities"
+                        class="results-grid"
+                    ></div>
+
+                </section>
+
+
+
+                <!-- =================================================
+                     JOB OPENINGS
+                ================================================== -->
+
+                <section
+                    class="panel"
+                    id="jobs-panel"
+                >
+
+                    <div class="section-title">
+
+                        <span class="section-icon">
+                            🏢
+                        </span>
+
+                        <div>
+
+                            <span class="section-label">
+                                JOB DISCOVERY
+                            </span>
+
+                            <h2>
+                                Suitable Job Openings
+                            </h2>
+
+                            <p>
+                                Real job opportunities matched
+                                against your resume.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div
+                        id="job-postings"
+                        class="results-grid"
+                    ></div>
+
+                </section>
+
+
+
+                <!-- =================================================
+                     TARGET JOB
+                ================================================== -->
+
+                <section
+                    class="panel"
+                    id="target-job-panel"
+                >
+
+                    <div class="section-title">
+
+                        <span class="section-icon">
+                            🎯
+                        </span>
+
+                        <div>
+
+                            <span class="section-label">
+                                JOB MATCH
+                            </span>
+
+                            <h2>
+                                Target Job Analysis
+                            </h2>
+
+                            <p>
+                                See exactly how your resume matches
+                                the job you selected.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div id="target-job-analysis"></div>
+
+                </section>
+
+
+
+                <!-- =================================================
+                     RESUME SUMMARY
+                ================================================== -->
+
+                <section
+                    class="panel"
+                    id="summary-panel"
+                >
+
+                    <div class="section-title">
+
+                        <span class="section-icon">
+                            📊
+                        </span>
+
+                        <div>
+
+                            <span class="section-label">
+                                RESUME INSIGHTS
+                            </span>
+
+                            <h2>
+                                Resume Analysis Summary
+                            </h2>
+
+                            <p>
+                                A structured overview of your
+                                resume information.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div id="resume-analysis-summary"></div>
+
+                </section>
+
+
+
+                <!-- =================================================
+                     ATS
+                ================================================== -->
+
+                <section
+                    class="panel"
+                    id="ats-panel"
+                >
+
+                    <div class="section-title">
+
+                        <span class="section-icon">
+                            🤖
+                        </span>
+
+                        <div>
+
+                            <span class="section-label">
+                                ATS OPTIMIZATION
+                            </span>
+
+                            <h2>
+                                ATS Score & Suggestions
+                            </h2>
+
+                            <p>
+                                Understand how well your resume
+                                can perform in Applicant Tracking Systems.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div id="ats-score"></div>
+
+                </section>
+
+
+
+                <!-- =================================================
+                     AI IMPROVEMENTS
+                ================================================== -->
+
+                <section
+                    class="panel"
+                    id="improvements-panel"
+                >
+
+                    <div class="section-title">
+
+                        <span class="section-icon">
+                            ✨
+                        </span>
+
+                        <div>
+
+                            <span class="section-label">
+                                AI COACH
+                            </span>
+
+                            <h2>
+                                AI Resume Improvements
+                            </h2>
+
+                            <p>
+                                Actionable suggestions to make
+                                your resume stronger.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div id="ai-improvements"></div>
+
+                </section>
+
+
+
+                <!-- =================================================
+                     SKILL GAP
+                ================================================== -->
+
+                <section
+                    class="panel"
+                    id="skill-gap-panel"
+                >
+
+                    <div class="section-title">
+
+                        <span class="section-icon">
+                            🧠
+                        </span>
+
+                        <div>
+
+                            <span class="section-label">
+                                SKILL ANALYSIS
+                            </span>
+
+                            <h2>
+                                Skill Gap Analysis
+                            </h2>
+
+                            <p>
+                                Understand your matched, partial
+                                and missing skills.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div id="skill-gap-analysis"></div>
+
+                </section>
+
+
+
+
+
+
+
+
+
+
+
+
+                <!-- =================================================
+                     APPLICATION TRACKER
+                ================================================== -->
+
+                <section
+                    class="panel"
+                    id="application-tracker-panel"
+                >
+
+                    <div class="section-title">
+
+                        <span class="section-icon">
+                            📋
+                        </span>
+
+                        <div>
+
+                            <span class="section-label">
+                                JOB MANAGEMENT
+                            </span>
+
+                            <h2>
+                                Application Tracker
+                            </h2>
+
+                            <p>
+                                Track your saved jobs, applications,
+                                interviews, offers and rejections.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Statistics -->
+
+                    <div
+                        class="tracker-stats"
+                        id="application-statistics"
+                    >
+
+                        <div class="tracker-stat-card">
+
+                            <span>
+                                Total
+                            </span>
+
+                            <strong id="stat-total">
+                                0
+                            </strong>
+
+                        </div>
+
+
+                        <div class="tracker-stat-card">
+
+                            <span>
+                                Applied
+                            </span>
+
+                            <strong id="stat-applied">
+                                0
+                            </strong>
+
+                        </div>
+
+
+                        <div class="tracker-stat-card">
+
+                            <span>
+                                Interview
+                            </span>
+
+                            <strong id="stat-interview">
+                                0
+                            </strong>
+
+                        </div>
+
+
+                        <div class="tracker-stat-card">
+
+                            <span>
+                                Offers
+                            </span>
+
+                            <strong id="stat-offer">
+                                0
+                            </strong>
+
+                        </div>
+
+
+                        <div class="tracker-stat-card">
+
+                            <span>
+                                Rejected
+                            </span>
+
+                            <strong id="stat-rejected">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- Tracker Form -->
+
+                    <div class="tracker-form">
+
+                        <div class="form-grid">
+
+                            <div class="form-group">
+
+                                <label for="application-company">
+                                    Company *
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="application-company"
+                                    placeholder="e.g. Google"
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="application-role">
+                                    Role *
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="application-role"
+                                    placeholder="e.g. Backend Developer"
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="application-url">
+                                    Job URL
+                                </label>
+
+                                <input
+                                    type="url"
+                                    id="application-url"
+                                    placeholder="https://example.com/job"
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="application-status">
+                                    Status
+                                </label>
+
+                                <select id="application-status">
+
+                                    <option value="Saved">
+                                        Saved
+                                    </option>
+
+                                    <option
+                                        value="Applied"
+                                        selected
+                                    >
+                                        Applied
+                                    </option>
+
+                                    <option value="Screening">
+                                        Screening
+                                    </option>
+
+                                    <option value="Interview">
+                                        Interview
+                                    </option>
+
+                                    <option value="Offer">
+                                        Offer
+                                    </option>
+
+                                    <option value="Rejected">
+                                        Rejected
+                                    </option>
+
+                                    <option value="Withdrawn">
+                                        Withdrawn
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="application-date">
+                                    Applied Date
+                                </label>
+
+                                <input
+                                    type="date"
+                                    id="application-date"
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="application-notes">
+                                Notes
+                            </label>
+
+                            <textarea
+                                id="application-notes"
+                                rows="4"
+                                placeholder="Add notes about this application..."
+                            ></textarea>
+
+                        </div>
+
+
+                        <div class="tracker-actions">
+
+                            <button
+                                type="button"
+                                id="add-application-button"
+                                class="primary-button"
+                            >
+                                ➕ Add Application
+                            </button>
+
+                            <button
+                                type="button"
+                                id="refresh-applications-button"
+                                class="secondary-button"
+                            >
+                                🔄 Refresh Applications
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="application-tracker-loading"
+                        class="loading-box"
+                        style="display: none;"
+                    >
+
+                        <div class="spinner"></div>
+
+                        <div>
+
+                            <strong>
+                                Loading Applications
+                            </strong>
+
+                            <p>
+                                Please wait...
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="applications-list"
+                        class="applications-list"
+                    ></div>
+
+                </section>
+
+
+
+                <!-- =================================================
+                     ABOUT PLATFORM
+                ================================================== -->
+
+                <section
+                    class="panel about-panel"
+                    id="about-panel"
+                >
+
+                    <div class="section-title">
+
+                        <span class="section-icon">
+                            💡
+                        </span>
+
+                        <div>
+
+                            <span class="section-label">
+                                ABOUT
+                            </span>
+
+                            <h2>
+                                Your AI Career Toolkit
+                            </h2>
+
+                            <p>
+                                Everything you need to understand,
+                                improve and manage your career journey.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="about-grid">
+
+                        <div class="about-card">
+
+                            <span>
+                                📄
+                            </span>
+
+                            <h3>
+                                Resume Analysis
+                            </h3>
+
+                            <p>
+                                Extract and understand your resume
+                                information using AI.
+                            </p>
+
+                        </div>
+
+
+                        <div class="about-card">
+
+                            <span>
+                                🤖
+                            </span>
+
+                            <h3>
+                                ATS Optimization
+                            </h3>
+
+                            <p>
+                                Measure ATS compatibility and
+                                identify optimization opportunities.
+                            </p>
+
+                        </div>
+
+
+                        <div class="about-card">
+
+                            <span>
+                                💼
+                            </span>
+
+                            <h3>
+                                Job Matching
+                            </h3>
+
+                            <p>
+                                Find job opportunities aligned with
+                                your skills and career profile.
+                            </p>
+
+                        </div>
+
+
+                        <div class="about-card">
+
+                            <span>
+                                🧠
+                            </span>
+
+                            <h3>
+                                Skill Gap Analysis
+                            </h3>
+
+                            <p>
+                                Identify the skills you are missing
+                                for the roles you want.
+                            </p>
+
+                        </div>
+
+
+                        <div class="about-card">
+
+                            <span>
+                                📋
+                            </span>
+
+                            <h3>
+                                Application Tracking
+                            </h3>
+
+                            <p>
+                                Keep your job applications organized
+                                from application to offer.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+            </section>
+
+
+        </main>
+
+
+
+        <!-- =================================================
+             FOOTER
+        ================================================== -->
+
+        <footer class="dashboard-footer">
+
+            <div>
+
+                <strong>
+                    🤖 CareerPilot AI
+                </strong>
+
+                <span>
+                    Intelligent career assistance powered by AI.
+                </span>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="back-to-top"
+                onclick="
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                "
+            >
+                ↑ Back to Top
+            </button>
+
+        </footer>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         FRONTEND EXTRA CONTROLS
+    ====================================================== -->
+
+    <script>
+
+        /*
+         * Safe frontend enhancements.
+         * These do not replace or interfere with app.js.
+         */
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                document.querySelectorAll("[data-needs-login]").forEach(
+                    function (el) {
+                        el.addEventListener("click", function () {
+                            const auth = document.getElementById("jx-auth-button");
+                            if (auth) { auth.click(); }
+                        });
+                    }
+                );
+
+                const navLinks =
+                    document.querySelectorAll(
+                        'a[href^="#"]'
+                    );
+
+                navLinks.forEach(
+                    function (link) {
+
+                        link.addEventListener(
+                            "click",
+                            function (event) {
+
+                                const targetId =
+                                    link.getAttribute("href");
+
+                                if (
+                                    !targetId ||
+                                    targetId === "#"
+                                ) {
+                                    return;
+                                }
+
+                                const target =
+                                    document.querySelector(
+                                        targetId
+                                    );
+
+                                if (target) {
+
+                                    event.preventDefault();
+
+                                    target.scrollIntoView({
+                                        behavior: "smooth",
+                                        block: "start"
+                                    });
+
+                                }
+
+                            }
+                        );
+
+                    }
+                );
+
+
+                /*
+                 * Automatically set today's date
+                 * for the application tracker.
+                 */
+
+                const applicationDate =
+                    document.getElementById(
+                        "application-date"
+                    );
+
+                if (
+                    applicationDate &&
+                    !applicationDate.value
+                ) {
+
+                    const today =
+                        new Date();
+
+                    const year =
+                        today.getFullYear();
+
+                    const month =
+                        String(
+                            today.getMonth() + 1
+                        ).padStart(
+                            2,
+                            "0"
+                        );
+
+                    const day =
+                        String(
+                            today.getDate()
+                        ).padStart(
+                            2,
+                            "0"
+                        );
+
+                    applicationDate.value =
+                        `${year}-${month}-${day}`;
+
+                }
+
+            }
+        );
+
+    </script>
+
+
+    <!-- =====================================================
+         MAIN APPLICATION JAVASCRIPT
+    ====================================================== -->
+
+    <script src="jobs.js?v=1"></script>
+    <script src="app.js"></script>
+
+
+</body>
+
+</html>

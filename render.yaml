@@ -1,0 +1,33 @@
+# Render Blueprint: New > Blueprint > connect your GitHub repo.
+services:
+  - type: web
+    name: ai-career-platform
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.api.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips='*'
+    healthCheckPath: /healthz
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      # Secret keys: Render asks you to paste these in the dashboard.
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: ADZUNA_APP_ID
+        sync: false
+      - key: ADZUNA_APP_KEY
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      # Generated for you automatically.
+      - key: SESSION_SECRET
+        generateValue: true
+      # Optional tuning
+      - key: MODEL_NAME
+        value: nvidia/nemotron-3-super-120b-a12b:free
+      - key: INDIA_FIRST_JOBS
+        value: "true"
+      # PUBLIC_URL / GOOGLE_REDIRECT_URI / FRONTEND_URL are derived from
+      # Render's built-in RENDER_EXTERNAL_URL - no need to set them.
