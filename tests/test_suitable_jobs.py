@@ -73,6 +73,17 @@ class SuitableJobsTests(unittest.TestCase):
         self.run_search(board, 1.5, 1)
         self.assertEqual(len(board.calls), 1)
 
+    def test_default_is_65_and_both_sources_are_represented(self):
+        from app.services.job_opportunity_service import DEFAULT_LIMIT
+        self.assertEqual(DEFAULT_LIMIT, 65)
+        adz = [dict(job(i, "Python Developer"), source="Adzuna") for i in range(90)]
+        joo = [dict(job(1000 + i, "Python Developer"), source="Jooble") for i in range(20)]
+        out = self.run_search(FakeBoard([], adz + joo), 2, 1, limit=DEFAULT_LIMIT)
+        self.assertEqual(len(out), 65)
+        sources = [j["source"] for j in out]
+        self.assertEqual(sources.count("Jooble"), 20)       # all 20 included
+        self.assertEqual(sources.count("Adzuna"), 45)
+
     def test_limit_is_respected_and_internal_fields_hidden(self):
         loose = [job(i, "Python Developer") for i in range(40)]
         out = self.run_search(FakeBoard([], loose), 2, 1, limit=12)

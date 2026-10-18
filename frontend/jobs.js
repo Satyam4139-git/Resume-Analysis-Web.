@@ -539,7 +539,13 @@
         heading.textContent = shown === 1
             ? "1 job found"
             : `${formatNumber(shown)} jobs found`;
-        sub.textContent = describeSearch(state.params);
+        const counts = {};
+        state.jobs.forEach((job) => {
+            if (job.source) counts[job.source] = (counts[job.source] || 0) + 1;
+        });
+        const mix = Object.keys(counts).map((name) => `${name} ${counts[name]}`).join(" · ");
+        sub.textContent = [describeSearch(state.params), mix ? `(${mix} loaded)` : ""]
+            .filter(Boolean).join(" ");
     }
 
     function renderResults(fromIndex) {

@@ -236,6 +236,47 @@ class JobBoardTests(unittest.TestCase):
         self.assertEqual(r.status_code, 200)
         self.assertTrue(r.json()["jobs"])
 
+    # ---- Jooble must be visible, never buried, and keys never leak ------
+
+    @mock.patch("app.jobs.job_board.requests.post")
+    @mock.patch("app.jobs.job_board.requests.get")
+    def test_jooble_jobs_are_mixed_in_not_buried_at_the_bottom(self, get, post):
+        adz = [(f"Python Developer {i}", f"AdzCo{i}", "Pune", "Python.", "2026-10-15T08:00:00Z", False)
+               for i in range(10)]
+        get.return_value = FakeResponse(adzuna_payload(*adz))
+        post.return_value = FakeResponse({"totalCount": 10, "jobs": [
+            {"id": i, "title": f"Python Developer J{i}", "company": f"JooCo{i}", "location": "Pune",
+             "snippet": "Python.", "link": f"https://jooble.org/jdp/{i}", "updated": "2026-10-15T00:00:00"}
+            for i in range(10)]})
+        with mock.patch.object(job_board, "JOOBLE_API_KEY", "jk"):
+            job_board._service = JobBoardService()
+            data = self.client.get("/jobs/search?q=python+developer").json()
+        first_six = [j["source"] for j in data["jobs"][:6]]
+        self.assertEqual(first_six.count("Jooble"), 3)            # alternating
+        self.assertEqual(data["sources"], {"Adzuna": 10, "Jooble": 10})
+
+    @mock.patch("app.jobs.job_board.requests.post")
+    @mock.patch("app.jobs.job_board.requests.get")
+    def test_failed_provider_is_reported_without_leaking_the_key(self, get, post):
+        import requests as rq
+        get.return_value = FakeResponse(adzuna_payload(*ROWS))
+        post.side_effect = rq.ConnectionError("failed for url: https://jooble.org/api/SECRETKEY123")
+        with mock.patch.object(job_board, "JOOBLE_API_KEY", "SECRETKEY123"):
+            job_board._service = JobBoardService()
+            with self.assertLogs("ResumeAnalyzer", level="WARNING") as logs:
+                self.client.get("/jobs/search?q=python")
+            status = self.client.get("/jobs/status").json()["providers"]
+        self.assertFalse(status["Jooble"]["ok"])
+        self.assertTrue(status["Adzuna"]["ok"])
+        self.assertTrue(status["Jooble"]["configured"])
+        self.assertNotIn("SECRETKEY123", str(status))
+        self.assertNotIn("SECRETKEY123", "\n".join(logs.output))
+
+    def test_status_endpoint_shows_unconfigured_provider(self):
+        data = self.client.get("/jobs/status").json()["providers"]
+        self.assertTrue(data["Adzuna"]["configured"])
+        self.assertFalse(data["Jooble"]["configured"])
+
     def test_level_matching_rules(self):
         self.assertEqual(level_matches("fresher", "Junior Python Dev", "")[0], False)
         self.assertEqual(level_matches("junior", "Python Developer", "1-3 years of experience")[0], True)

@@ -40,6 +40,13 @@ def _check_rate(request: Request) -> None:
             _hits.pop(key, None)
 
 
+@router.get("/status")
+def job_sources_status():
+    """Which job sources are switched on and how their last search went
+    (no keys are ever shown)."""
+    return {"providers": get_job_board().status()}
+
+
 @router.get("/search")
 def search_jobs(
     request: Request,

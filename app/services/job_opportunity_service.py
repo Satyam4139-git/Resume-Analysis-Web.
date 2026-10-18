@@ -29,10 +29,10 @@ from app.jobs.job_search_service import JobSearchService
 
 
 # How many "Suitable Job Openings" to show after an analysis.
-DEFAULT_LIMIT = max(1, int(os.getenv("SUITABLE_JOBS_LIMIT", "30")))
+DEFAULT_LIMIT = max(1, int(os.getenv("SUITABLE_JOBS_LIMIT", "65")))
 
 # Jobs fetched per search term (a resume produces up to 3 terms).
-PER_TERM_LIMIT = 25
+PER_TERM_LIMIT = 40
 
 
 class JobOpportunityService:
@@ -188,15 +188,35 @@ class JobOpportunityService:
 
             opportunities.append(job)
 
-        opportunities.sort(
+        # Pick the final list by taking turns between sources (best first
+        # within each), so Adzuna AND Jooble are both represented; then
+        # show the chosen jobs best-match first.
+        by_source: Dict[str, List[Dict[str, Any]]] = {}
+
+        for item in sorted(
+            opportunities,
+            key=lambda item: item.get("_rank", 0),
+            reverse=True,
+        ):
+            by_source.setdefault(item.get("source", ""), []).append(item)
+
+        queues = list(by_source.values())
+        chosen: List[Dict[str, Any]] = []
+
+        while len(chosen) < limit and any(queues):
+            for queue in queues:
+                if queue and len(chosen) < limit:
+                    chosen.append(queue.pop(0))
+
+        chosen.sort(
             key=lambda item: item.get("_rank", 0),
             reverse=True,
         )
 
-        for item in opportunities:
+        for item in chosen:
             item.pop("_rank", None)
 
-        return opportunities[:limit]
+        return chosen
 
     # ==========================================================
     # BUILD SEARCH TERMS

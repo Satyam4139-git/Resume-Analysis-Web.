@@ -64,6 +64,21 @@ _SKILL_PATTERNS = [
 ]
 
 
+def _safe_error(error: Exception) -> str:
+    """
+    Error text that is safe to log or show. Provider URLs contain the API
+    key, and requests' own messages include the URL, so never use str(error).
+    """
+    status = getattr(getattr(error, "response", None), "status_code", None)
+    if status:
+        return f"HTTP {status}"
+    text = f"{type(error).__name__}: {error}"
+    for secret in (ADZUNA_APP_KEY, ADZUNA_APP_ID, JOOBLE_API_KEY):
+        if secret:
+            text = text.replace(str(secret), "***")
+    return text[:200]
+
+
 class JobSearchUnavailable(Exception):
     """No job provider is configured or every provider failed."""
 
@@ -146,7 +161,7 @@ class AdzunaProvider:
                     and location.lower() != "remote",
                 ), None
             except Exception as error:
-                logger.warning("Adzuna (%s) search failed: %s", country, error)
+                logger.warning("Adzuna (%s) search failed: %s", country, _safe_error(error))
                 return ([], 0), error
 
         with ThreadPoolExecutor(max_workers=len(countries)) as pool:
@@ -294,6 +309,28 @@ class JobBoardService:
         self.providers = [AdzunaProvider(), JoobleProvider()]
         self._cache: Dict[Tuple, Tuple[float, Dict[str, Any]]] = {}
         self._lock = threading.Lock()
+        self._status: Dict[str, Dict[str, Any]] = {}
+
+    def _note(self, name, ok, count=0, error=""):
+        with self._lock:
+            self._status[name] = {
+                "ok": ok,
+                "last_count": count,
+                "last_error": error,
+                "at": int(time.time()),
+            }
+
+    def status(self) -> Dict[str, Dict[str, Any]]:
+        """Which providers are switched on and how their last call went."""
+        with self._lock:
+            seen = {k: dict(v) for k, v in self._status.items()}
+        return {
+            p.name: {
+                "configured": p.enabled,
+                **seen.get(p.name, {"ok": None, "last_count": 0, "last_error": "", "at": None}),
+            }
+            for p in self.providers
+        }
 
     @property
     def configured(self) -> bool:
@@ -341,11 +378,15 @@ class JobBoardService:
 
         def run(provider):
             try:
-                return provider.name, provider.search(
+                result = provider.search(
                     q, location, remote, posted_within, sort, page, limit
-                ), None
+                )
+                self._note(provider.name, True, len(result[0]))
+                return provider.name, result, None
             except Exception as error:      # network, bad JSON, quota...
-                logger.warning("%s job search failed: %s", provider.name, error)
+                message = _safe_error(error)
+                logger.warning("%s job search failed: %s", provider.name, message)
+                self._note(provider.name, False, 0, message)
                 return provider.name, ([], 0), error
 
         with ThreadPoolExecutor(max_workers=len(active)) as pool:
@@ -408,13 +449,28 @@ class JobBoardService:
                 stated = 1 if (level and job["level"] == level) else 0
                 return (hits, stated)
 
-            results.sort(key=score, reverse=True)      # stable: provider order kept on ties
+            # Alternate providers inside each score group, so one source
+            # (Adzuna) never buries the other (Jooble) at the bottom.
+            position: Dict[str, int] = {}
+            for job in results:
+                slot = position.get(job["source"], 0)
+                job["_slot"] = slot
+                position[job["source"]] = slot + 1
+
+            results.sort(key=lambda j: score(j) + (-j["_slot"],), reverse=True)
+
+            for job in results:
+                job.pop("_slot", None)
 
         response = {
             "jobs": results,
             "total": total,
             "page": page,
             "has_more": has_more,
+            "sources": {
+                name: sum(1 for j in results if j["source"] == name)
+                for name in sorted({j["source"] for j in results})
+            },
         }
 
         self._put(key, response)
