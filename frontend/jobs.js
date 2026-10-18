@@ -11,7 +11,7 @@
          &posted_within=1|7|30
          &sort=relevance|date
          &page=1
-         &limit=20
+         &limit=30
 
    Expected response:
 
@@ -38,7 +38,7 @@
        SETTINGS
     ----------------------------------------------------- */
 
-    const PAGE_SIZE = 20;
+    const PAGE_SIZE = 30;
     const REQUEST_TIMEOUT_MS = 15000;
     const SAVED_KEY = "careerpilot.savedJobs";
     const MAX_SAVED = 100;

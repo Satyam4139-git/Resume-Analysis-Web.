@@ -58,6 +58,8 @@ class JobBoardTests(unittest.TestCase):
             mock.patch.object(job_board, "ADZUNA_APP_ID", "id"),
             mock.patch.object(job_board, "ADZUNA_APP_KEY", "key"),
             mock.patch.object(job_board, "JOOBLE_API_KEY", None),
+            mock.patch.object(job_board, "ADZUNA_COUNTRY", "in"),
+            mock.patch.object(job_board, "ADZUNA_COUNTRIES", "in"),
         ]
         for patcher in self.p:
             patcher.start()
@@ -190,6 +192,49 @@ class JobBoardTests(unittest.TestCase):
         codes = [self.client.get(f"/jobs/search?q=python{i}").status_code for i in range(32)]
         self.assertEqual(codes[:30], [200] * 30)
         self.assertEqual(codes[30], 429)
+
+    # ---- more openings: several countries -------------------------------
+
+    @mock.patch("app.jobs.job_board.requests.get")
+    def test_searches_several_countries_main_first(self, get):
+        def fake(url, params=None, timeout=None):
+            code = url.split("/jobs/")[1].split("/")[0]
+            return FakeResponse(adzuna_payload(
+                (f"Python Developer {code}", f"Co-{code}", "Anywhere", "Python.", "2026-10-15T08:00:00Z", False),
+            ))
+        get.side_effect = fake
+        with mock.patch.object(job_board, "ADZUNA_COUNTRIES", "in,gb,us,au,ca"):
+            data = self.client.get("/jobs/search?q=python").json()
+        called = sorted(c.args[0].split("/jobs/")[1].split("/")[0] for c in get.call_args_list)
+        self.assertEqual(called, ["gb", "in", "us"])          # capped at 3
+        self.assertEqual(len(data["jobs"]), 3)
+        self.assertEqual(data["jobs"][0]["company"], "Co-in")  # India first
+        self.assertEqual(len({j["id"] for j in data["jobs"]}), 3)
+
+    @mock.patch("app.jobs.job_board.requests.get")
+    def test_other_countries_must_match_the_city(self, get):
+        def fake(url, params=None, timeout=None):
+            code = url.split("/jobs/")[1].split("/")[0]
+            where = "Kolkata, West Bengal" if code == "in" else "Austin, Texas"
+            return FakeResponse(adzuna_payload(
+                (f"Python Developer {code}", f"Co-{code}", where, "Python.", "2026-10-15T08:00:00Z", False),
+            ))
+        get.side_effect = fake
+        with mock.patch.object(job_board, "ADZUNA_COUNTRIES", "in,us"):
+            data = self.client.get("/jobs/search?q=python&location=Kolkata").json()
+        self.assertEqual([j["company"] for j in data["jobs"]], ["Co-in"])
+
+    @mock.patch("app.jobs.job_board.requests.get")
+    def test_one_country_failing_keeps_the_others(self, get):
+        def fake(url, params=None, timeout=None):
+            if "/gb/" in url:
+                raise Exception("quota")
+            return FakeResponse(adzuna_payload(*ROWS))
+        get.side_effect = fake
+        with mock.patch.object(job_board, "ADZUNA_COUNTRIES", "in,gb"):
+            r = self.client.get("/jobs/search?q=python")
+        self.assertEqual(r.status_code, 200)
+        self.assertTrue(r.json()["jobs"])
 
     def test_level_matching_rules(self):
         self.assertEqual(level_matches("fresher", "Junior Python Dev", "")[0], False)

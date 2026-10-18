@@ -27,6 +27,7 @@ from app.core.config import (
     ADZUNA_APP_ID,
     ADZUNA_APP_KEY,
     ADZUNA_COUNTRY,
+    ADZUNA_COUNTRIES,
     JOOBLE_API_KEY,
 )
 from app.core.logger import logger
@@ -35,6 +36,10 @@ from app.utils.seniority import job_level, required_years
 REQUEST_TIMEOUT = 8          # seconds per provider (the page gives up at 15)
 CACHE_TTL = 600              # 10 minutes
 CACHE_MAX = 500
+
+# How many Adzuna countries one search may query (each is one API call).
+# More countries = more openings, but uses more of the free daily quota.
+MAX_COUNTRIES = max(1, int(os.getenv("JOB_MAX_COUNTRIES", "3")))
 
 LEVEL_NAMES = {0: "fresher", 1: "junior", 2: "mid", 3: "senior", 4: "senior"}
 VALID_LEVELS = {"fresher", "junior", "mid", "senior"}
@@ -115,7 +120,53 @@ class AdzunaProvider:
     def enabled(self) -> bool:
         return bool(ADZUNA_APP_ID and ADZUNA_APP_KEY)
 
+    @staticmethod
+    def countries() -> List[str]:
+        """Main country first, then the others from ADZUNA_COUNTRIES."""
+        main = (ADZUNA_COUNTRY or "in").strip().lower()
+        extra = [
+            c.strip().lower()
+            for c in str(ADZUNA_COUNTRIES or "").split(",")
+            if c.strip()
+        ]
+        ordered = [main] + [c for c in extra if c != main]
+        return ordered[:MAX_COUNTRIES]
+
     def search(self, q, location, remote, posted_within, sort, page, limit):
+        countries = self.countries()
+        main = countries[0]
+
+        def one(country):
+            try:
+                return self._search_country(
+                    country, q, location, remote, posted_within, sort, page, limit,
+                    # Another country's search for "Kolkata" can return loose
+                    # matches; keep only jobs that really mention the place.
+                    require_location=bool(location) and country != main
+                    and location.lower() != "remote",
+                ), None
+            except Exception as error:
+                logger.warning("Adzuna (%s) search failed: %s", country, error)
+                return ([], 0), error
+
+        with ThreadPoolExecutor(max_workers=len(countries)) as pool:
+            outcomes = list(pool.map(one, countries))
+
+        if all(error is not None for _r, error in outcomes):
+            raise outcomes[0][1]
+
+        jobs: List[Dict[str, Any]] = []
+        total = 0
+        for (country_jobs, count), error in outcomes:
+            if error is None:
+                jobs.extend(country_jobs)
+                total += count
+        return jobs, total
+
+    def _search_country(
+        self, country, q, location, remote, posted_within, sort, page, limit,
+        require_location=False,
+    ):
         params = {
             "app_id": ADZUNA_APP_ID,
             "app_key": ADZUNA_APP_KEY,
@@ -133,19 +184,23 @@ class AdzunaProvider:
         if posted_within:
             params["max_days_old"] = posted_within
 
-        url = f"{self.BASE}/{ADZUNA_COUNTRY or 'in'}/search/{page}"
+        url = f"{self.BASE}/{country or 'in'}/search/{page}"
         response = requests.get(url, params=params, timeout=REQUEST_TIMEOUT)
         response.raise_for_status()
         data = response.json()
 
+        wanted = (location or "").strip().lower()
         jobs = []
         for item in data.get("results", []) or []:
+            where = _clean((item.get("location") or {}).get("display_name"))
+            if require_location and wanted not in where.lower():
+                continue
             predicted = str(item.get("salary_is_predicted", "0")) == "1"
             jobs.append({
-                "id": f"adzuna-{item.get('id')}",
+                "id": f"adzuna-{country}-{item.get('id')}",
                 "title": _clean(item.get("title")),
                 "company": _clean((item.get("company") or {}).get("display_name")),
-                "location": _clean((item.get("location") or {}).get("display_name")),
+                "location": where,
                 "description": _clean(item.get("description")),
                 "url": item.get("redirect_url") or "",
                 "posted_at": item.get("created") or "",
@@ -154,7 +209,11 @@ class AdzunaProvider:
                 "salary_max": None if predicted else item.get("salary_max"),
                 "source": self.name,
             })
-        return jobs, int(data.get("count") or len(jobs))
+
+        count = int(data.get("count") or len(jobs))
+        if require_location:
+            count = len(jobs)
+        return jobs, count
 
 
 class JoobleProvider:
