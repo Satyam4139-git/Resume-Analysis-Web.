@@ -128,7 +128,6 @@ class AnalysisPipeline:
         jobs_future = pool.submit(
             self.job_opportunity_service.search_jobs,
             resume=resume,
-            limit=6,
         )
 
         # =====================================================
@@ -164,7 +163,7 @@ class AnalysisPipeline:
         try:
 
             job_postings = jobs_future.result(
-                timeout=20
+                timeout=25
             )
 
             if not job_postings:

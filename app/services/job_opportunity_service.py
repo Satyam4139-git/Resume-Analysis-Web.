@@ -19,12 +19,20 @@ Responsibilities:
 
 from __future__ import annotations
 
+import os
 import re
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Dict, List
 
 from app.core.logger import logger
 from app.jobs.job_search_service import JobSearchService
+
+
+# How many "Suitable Job Openings" to show after an analysis.
+DEFAULT_LIMIT = max(1, int(os.getenv("SUITABLE_JOBS_LIMIT", "30")))
+
+# Jobs fetched per search term (a resume produces up to 3 terms).
+PER_TERM_LIMIT = 25
 
 
 class JobOpportunityService:
@@ -44,7 +52,7 @@ class JobOpportunityService:
     def search_jobs(
         self,
         resume,
-        limit: int = 6,
+        limit: int = DEFAULT_LIMIT,
     ) -> List[Dict[str, Any]]:
         """
         Real job postings that fit the resume AND the candidate's
@@ -63,7 +71,7 @@ class JobOpportunityService:
         try:
             limit = int(limit)
         except (TypeError, ValueError):
-            limit = 6
+            limit = DEFAULT_LIMIT
 
         if limit <= 0:
             return []
@@ -82,7 +90,7 @@ class JobOpportunityService:
 
             return []
 
-        level, _years = get_level(resume)
+        level, years = get_level(resume)
 
         level_name = BOARD_LEVELS.get(level, "")
 
@@ -98,60 +106,95 @@ class JobOpportunityService:
             level_name or "any",
         )
 
-        def run(term):
+        def run(term, wanted_level):
             try:
                 return board.search(
                     q=term,
-                    level=level_name,
-                    limit=10,
+                    level=wanted_level,
+                    limit=PER_TERM_LIMIT,
                 ).get("jobs", [])
             except Exception as error:
                 logger.warning("Job search failed for '%s': %s", term, error)
                 return []
 
-        with ThreadPoolExecutor(max_workers=len(terms)) as pool:
-            batches = list(pool.map(run, terms))
+        def gather(wanted_level):
+            with ThreadPoolExecutor(max_workers=len(terms)) as pool:
+                batches = list(
+                    pool.map(lambda t: run(t, wanted_level), terms)
+                )
+            return [item for batch in batches for item in batch]
+
+        items = gather(level_name)
+
+        # Too few exact-level jobs (common for freshers)? Search again
+        # without the level filter and keep every job that is not clearly
+        # too senior / too junior; slight stretch roles rank lower.
+        distinct = {i.get("url") for i in items if i.get("url")}
+
+        if level_name and len(distinct) < limit:
+            items += gather("")
+
+        from app.utils.seniority import level_fit
 
         opportunities = []
         seen = set()
 
-        for batch in batches:
+        for item in items:
 
-            for item in batch:
+            url = item.get("url", "")
 
-                url = item.get("url", "")
+            if not url or url in seen:
+                continue
 
-                if not url or url in seen:
-                    continue
+            fit = level_fit(
+                level,
+                years,
+                item.get("title", ""),
+                item.get("description", ""),
+            )
 
-                seen.add(url)
+            if fit["exclude"]:
+                continue
 
-                job = {
-                    "company": item.get("company", ""),
-                    "title": item.get("title", ""),
-                    "location": item.get("location", ""),
-                    "description": item.get("description", ""),
-                    "job_url": url,
-                    "source": item.get("source", ""),
-                    "salary_min": item.get("salary_min"),
-                    "salary_max": item.get("salary_max"),
-                    "level": item.get("level", ""),
-                    "remote": item.get("remote", False),
-                }
+            seen.add(url)
 
-                job.update(
-                    self._calculate_match(
-                        resume,
-                        job,
-                    )
+            job = {
+                "company": item.get("company", ""),
+                "title": item.get("title", ""),
+                "location": item.get("location", ""),
+                "description": item.get("description", ""),
+                "job_url": url,
+                "source": item.get("source", ""),
+                "salary_min": item.get("salary_min"),
+                "salary_max": item.get("salary_max"),
+                "level": item.get("level", ""),
+                "remote": item.get("remote", False),
+            }
+
+            if fit["note"]:
+                job["level_fit"] = fit["note"]
+
+            job.update(
+                self._calculate_match(
+                    resume,
+                    job,
                 )
+            )
 
-                opportunities.append(job)
+            job["_rank"] = (
+                float(job.get("match_score", 0) or 0)
+                * fit["multiplier"]
+            )
+
+            opportunities.append(job)
 
         opportunities.sort(
-            key=lambda item: float(item.get("match_score", 0) or 0),
+            key=lambda item: item.get("_rank", 0),
             reverse=True,
         )
+
+        for item in opportunities:
+            item.pop("_rank", None)
 
         return opportunities[:limit]
 
