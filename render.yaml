@@ -21,6 +21,10 @@ services:
         sync: false
       - key: GOOGLE_CLIENT_SECRET
         sync: false
+      # Free Postgres connection string (e.g. from neon.tech) so saved
+      # applications survive restarts. Paste it in the Render dashboard.
+      - key: DATABASE_URL
+        sync: false
       # Generated for you automatically.
       - key: SESSION_SECRET
         generateValue: true

@@ -18,8 +18,8 @@ The backend serves the website too, so ONE Render service is the whole site.
 
 Notes
 - Free Render sleeps after ~15 min idle; first load afterwards takes 30-60 s.
-- Saved applications use SQLite and are wiped on each deploy on the free plan. For persistence attach
-  a disk and set `DATABASE_PATH=/var/data/applications.db` (paid), or move to a free Postgres later.
+- Saved applications: set `DATABASE_URL` (a free Neon Postgres connection string) in Render > Environment so they
+  survive restarts and redeploys. Without it the app falls back to a SQLite file, which the free plan wipes.
 - There is a single `frontend/` folder; the backend serves it, so nothing else needs hosting.
 - Run locally: copy `.env.example` to `.env`, then `uvicorn app.api.main:app --reload` and open http://127.0.0.1:8000
 
