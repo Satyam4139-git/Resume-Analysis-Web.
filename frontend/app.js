@@ -2,7 +2,9 @@
 // goes to whatever address the site was opened from (Render, localhost...).
 // Only set window.__API_BASE_URL__ (before this script) if the frontend is
 // hosted separately from the backend.
-const API_BASE_URL = (window.__API_BASE_URL__ || "").replace(/\/+$/, "");
+const API_BASE_URL = (
+    window.__API_BASE_URL__ || "https://resume-analysis-web.onrender.com"
+).replace(/\/+$/, "");
 
 let currentUser = null;
 let uploadedResumePath = null;

@@ -340,8 +340,11 @@
     ----------------------------------------------------- */
 
     function apiBase() {
-        return (typeof API_BASE_URL !== "undefined" ? API_BASE_URL : "")
-            .replace(/\/$/, "");
+      return (
+        typeof API_BASE_URL !== "undefined" && API_BASE_URL
+            ? API_BASE_URL
+            : "https://resume-analysis-web.onrender.com"
+      ).replace(/\/+$/, "");
     }
 
     async function fetchJobs(params, page, signal) {
