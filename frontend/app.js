@@ -231,7 +231,7 @@ async function logout() {
    LOGIN UI
 ========================================================= */
 
-function showLogin() {
+function showLogin(message) {
 
     if (typeof hideJobsHome === "function") {
         hideJobsHome();
@@ -251,6 +251,12 @@ function showLogin() {
     if (loginSection) {
         loginSection.style.display =
             "flex";
+    }
+
+    const notice = document.getElementById("login-notice");
+    if (notice) {
+        notice.textContent = message || "";
+        notice.hidden = !message;
     }
 
 
@@ -420,6 +426,12 @@ function handleFileSelection(event) {
 ========================================================= */
 
 async function analyzeResume() {
+
+    // Login gate: visitors must sign in before analysing a resume.
+    if (!currentUser) {
+        showLogin("Please sign in with Google to analyze your resume.");
+        return;
+    }
 
     if (analysisInProgress) {
 

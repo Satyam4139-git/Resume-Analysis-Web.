@@ -5547,3 +5547,13 @@ button, input, select, textarea { font-family: var(--brand-font); }
 /* keep the illustration clear of the headline */
 .jx-art { top: 215px; width: min(500px, 42vw); right: max(-30px, calc((100% - 1240px) / 2 - 50px)); opacity: .9; }
 @media (max-width: 960px) { .jx-art { display: none; } }
+
+/* ---- standard SVG brand icon + login notice ---- */
+.app-icon { width: 1em; height: 1em; display: block; }
+.brand-icon .app-icon, .logo-circle .app-icon { width: 24px; height: 24px; color: #fff; margin: auto; }
+.section-icon .app-icon, .about-card > span .app-icon { width: 22px; height: 22px; }
+.login-notice { margin: 0 0 14px; padding: 10px 14px; border-radius: 12px; background: #fdecf3; color: #b81f5c; font-weight: 600; font-size: .92rem; text-align: center; }
+.login-notice[hidden] { display: none; }
+.login-card .login-notice { color: #b81f5c; background: #fdecf3; }
+.logo-circle .app-icon, .brand-icon .app-icon { width: 30px; height: 30px; }
+.dashboard-header .brand-icon .app-icon { width: 24px; height: 24px; }

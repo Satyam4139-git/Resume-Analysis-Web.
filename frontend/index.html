@@ -16,7 +16,7 @@
     >
 
     <meta name="theme-color" content="#b5348a">
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A4%96%3C/text%3E%3C/svg%3E">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23ef3a7b'/%3E%3Cstop offset='1' stop-color='%233b36b2'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='8' fill='url(%23g)'/%3E%3Cg fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='6' y='11' width='20' height='14' rx='2.5'/%3E%3Cpath d='M12 11V9.5A1.5 1.5 0 0 1 13.500 8h5A1.500 1.500 0 0 1 20 9.500V11M6 17h20'/%3E%3C/g%3E%3C/svg%3E">
     <title>CareerPilot AI | Your Career Workspace</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -91,13 +91,13 @@
                 <div class="jx-field">
                     <label for="jx-q" class="jx-sr">Job title or skill</label>
                     <svg class="jx-field-icon" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
-                    <input id="jx-q" type="search" placeholder="Job title, keywords or skill" maxlength="80" enterkeyhint="search">
+                    <input id="jx-q" type="search" placeholder="Job title, keywords or skill" maxlength="80" enterkeyhint="search" autocomplete="off">
                 </div>
 
                 <div class="jx-field">
                     <label for="jx-location" class="jx-sr">City</label>
                     <svg class="jx-field-icon" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
-                    <input id="jx-location" type="text" list="jx-city-list" placeholder="City, e.g. Kolkata" maxlength="60" enterkeyhint="search">
+                    <input id="jx-location" type="text" list="jx-city-list" placeholder="City, e.g. Kolkata" maxlength="60" enterkeyhint="search" autocomplete="off">
                     <datalist id="jx-city-list"></datalist>
                 </div>
 
@@ -117,7 +117,7 @@
         <section class="jx-filters" aria-label="Filters">
             <div class="jx-filter">
                 <label for="jx-level">Experience</label>
-                <select id="jx-level">
+                <select id="jx-level" autocomplete="off">
                     <option value="">Any level</option>
                     <option value="fresher">Fresher (0–1 yr)</option>
                     <option value="junior">Junior (1–3 yrs)</option>
@@ -128,7 +128,7 @@
 
             <div class="jx-filter">
                 <label for="jx-posted">Date posted</label>
-                <select id="jx-posted">
+                <select id="jx-posted" autocomplete="off">
                     <option value="">Any time</option>
                     <option value="1">Last 24 hours</option>
                     <option value="7">Last 7 days</option>
@@ -138,7 +138,7 @@
 
             <div class="jx-filter">
                 <label for="jx-sort">Sort by</label>
-                <select id="jx-sort">
+                <select id="jx-sort" autocomplete="off">
                     <option value="relevance">Best match</option>
                     <option value="date">Newest first</option>
                 </select>
@@ -204,7 +204,7 @@
         <div class="login-card">
 
             <div class="logo-circle">
-                🤖
+                <svg class="app-icon" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="7" width="19" height="13" rx="2.5"/><path d="M8.5 7V5.5A1.5 1.5 0 0 1 10 4h4a1.5 1.5 0 0 1 1.5 1.5V7"/><path d="M2.5 13h19"/><path d="M10.5 13v1.5h3V13"/></svg>
             </div>
 
             <div class="login-badge">
@@ -220,6 +220,8 @@
                 Analyze your resume, discover relevant jobs,
                 improve your skills and track applications.
             </p>
+
+            <p id="login-notice" class="login-notice" role="status" hidden></p>
 
             <button
                 type="button"
@@ -275,7 +277,7 @@
             <div class="header-brand">
 
                 <div class="brand-icon">
-                    🤖
+                    <svg class="app-icon" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="7" width="19" height="13" rx="2.5"/><path d="M8.5 7V5.5A1.5 1.5 0 0 1 10 4h4a1.5 1.5 0 0 1 1.5 1.5V7"/><path d="M2.5 13h19"/><path d="M10.5 13v1.5h3V13"/></svg>
                 </div>
 
                 <div class="brand-text">
@@ -562,8 +564,7 @@
                             <input
                                 type="text"
                                 id="company"
-                                placeholder="e.g. Google, TCS, Infosys"
-                            >
+                                placeholder="e.g. Google, TCS, Infosys" autocomplete="off">
 
                         </div>
 
@@ -577,8 +578,7 @@
                             <input
                                 type="text"
                                 id="role"
-                                placeholder="e.g. Python Developer"
-                            >
+                                placeholder="e.g. Python Developer" autocomplete="off">
 
                         </div>
 
@@ -594,8 +594,7 @@
                         <textarea
                             id="job-description"
                             rows="8"
-                            placeholder="Paste the complete job description here..."
-                        ></textarea>
+                            placeholder="Paste the complete job description here..." autocomplete="off"></textarea>
 
                     </div>
 
@@ -850,7 +849,7 @@
                     <div class="section-title">
 
                         <span class="section-icon">
-                            🤖
+                            <svg class="app-icon" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="7" width="19" height="13" rx="2.5"/><path d="M8.5 7V5.5A1.5 1.5 0 0 1 10 4h4a1.5 1.5 0 0 1 1.5 1.5V7"/><path d="M2.5 13h19"/><path d="M10.5 13v1.5h3V13"/></svg>
                         </span>
 
                         <div>
@@ -1092,8 +1091,7 @@
                                 <input
                                     type="text"
                                     id="application-company"
-                                    placeholder="e.g. Google"
-                                >
+                                    placeholder="e.g. Google" autocomplete="off">
 
                             </div>
 
@@ -1107,8 +1105,7 @@
                                 <input
                                     type="text"
                                     id="application-role"
-                                    placeholder="e.g. Backend Developer"
-                                >
+                                    placeholder="e.g. Backend Developer" autocomplete="off">
 
                             </div>
 
@@ -1122,8 +1119,7 @@
                                 <input
                                     type="url"
                                     id="application-url"
-                                    placeholder="https://example.com/job"
-                                >
+                                    placeholder="https://example.com/job" autocomplete="off">
 
                             </div>
 
@@ -1134,7 +1130,7 @@
                                     Status
                                 </label>
 
-                                <select id="application-status">
+                                <select id="application-status" autocomplete="off">
 
                                     <option value="Saved">
                                         Saved
@@ -1180,8 +1176,7 @@
 
                                 <input
                                     type="date"
-                                    id="application-date"
-                                >
+                                    id="application-date" autocomplete="off">
 
                             </div>
 
@@ -1197,8 +1192,7 @@
                             <textarea
                                 id="application-notes"
                                 rows="4"
-                                placeholder="Add notes about this application..."
-                            ></textarea>
+                                placeholder="Add notes about this application..." autocomplete="off"></textarea>
 
                         </div>
 
@@ -1316,7 +1310,7 @@
                         <div class="about-card">
 
                             <span>
-                                🤖
+                                <svg class="app-icon" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="7" width="19" height="13" rx="2.5"/><path d="M8.5 7V5.5A1.5 1.5 0 0 1 10 4h4a1.5 1.5 0 0 1 1.5 1.5V7"/><path d="M2.5 13h19"/><path d="M10.5 13v1.5h3V13"/></svg>
                             </span>
 
                             <h3>
@@ -1404,7 +1398,7 @@
             <div>
 
                 <strong>
-                    🤖 CareerPilot AI
+                    CareerPilot AI
                 </strong>
 
                 <span>
