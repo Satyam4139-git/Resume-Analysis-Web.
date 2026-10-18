@@ -58,7 +58,7 @@ app.add_middleware(
     secret_key=SESSION_SECRET,
     session_cookie="ai_career_session",
     max_age=60 * 60 * 24 * 7,
-    same_site="lax",
+    same_site="none",
     https_only=SESSION_HTTPS_ONLY,
 )
 
