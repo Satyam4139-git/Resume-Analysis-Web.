@@ -30,6 +30,7 @@ class ApplicationService:
 
     def create(
         self,
+        user_id: str,
         company: str,
         role: str,
         job_url: Optional[str] = None,
@@ -59,6 +60,7 @@ class ApplicationService:
                 """
                 INSERT INTO applications
                 (
+                    user_id,
                     company,
                     role,
                     job_url,
@@ -66,9 +68,10 @@ class ApplicationService:
                     applied_date,
                     notes
                 )
-                VALUES (?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
+                    user_id,
                     company.strip(),
                     role.strip(),
                     job_url,
@@ -86,7 +89,7 @@ class ApplicationService:
 
             connection.close()
 
-        return self.get(application_id)
+        return self.get(user_id, application_id)
 
     # ==========================================================
     # GET ONE
@@ -94,6 +97,7 @@ class ApplicationService:
 
     def get(
         self,
+        user_id: str,
         application_id: int,
     ) -> Dict[str, Any]:
 
@@ -105,9 +109,9 @@ class ApplicationService:
                 """
                 SELECT *
                 FROM applications
-                WHERE id = ?
+                WHERE id = ? AND user_id = ?
                 """,
-                (application_id,),
+                (application_id, user_id),
             ).fetchone()
 
         finally:
@@ -127,6 +131,7 @@ class ApplicationService:
 
     def get_all(
         self,
+        user_id: str,
         status: Optional[str] = None,
     ) -> List[Dict[str, Any]]:
 
@@ -140,10 +145,10 @@ class ApplicationService:
                     """
                     SELECT *
                     FROM applications
-                    WHERE status = ?
+                    WHERE user_id = ? AND status = ?
                     ORDER BY created_at DESC
                     """,
-                    (status,),
+                    (user_id, status),
                 ).fetchall()
 
             else:
@@ -152,8 +157,10 @@ class ApplicationService:
                     """
                     SELECT *
                     FROM applications
+                    WHERE user_id = ?
                     ORDER BY created_at DESC
-                    """
+                    """,
+                    (user_id,),
                 ).fetchall()
 
         finally:
@@ -171,6 +178,7 @@ class ApplicationService:
 
     def update(
         self,
+        user_id: str,
         application_id: int,
         company: Optional[str] = None,
         role: Optional[str] = None,
@@ -180,7 +188,7 @@ class ApplicationService:
         notes: Optional[str] = None,
     ) -> Dict[str, Any]:
 
-        existing = self.get(application_id)
+        existing = self.get(user_id, application_id)
 
         company = (
             company
@@ -238,7 +246,7 @@ class ApplicationService:
                     applied_date = ?,
                     notes = ?,
                     updated_at = CURRENT_TIMESTAMP
-                WHERE id = ?
+                WHERE id = ? AND user_id = ?
                 """,
                 (
                     company,
@@ -248,6 +256,7 @@ class ApplicationService:
                     applied_date,
                     notes,
                     application_id,
+                    user_id,
                 ),
             )
 
@@ -257,7 +266,7 @@ class ApplicationService:
 
             connection.close()
 
-        return self.get(application_id)
+        return self.get(user_id, application_id)
 
     # ==========================================================
     # DELETE
@@ -265,6 +274,7 @@ class ApplicationService:
 
     def delete(
         self,
+        user_id: str,
         application_id: int,
     ) -> bool:
 
@@ -275,9 +285,9 @@ class ApplicationService:
             cursor = connection.execute(
                 """
                 DELETE FROM applications
-                WHERE id = ?
+                WHERE id = ? AND user_id = ?
                 """,
-                (application_id,),
+                (application_id, user_id),
             )
 
             connection.commit()
@@ -294,9 +304,9 @@ class ApplicationService:
     # STATISTICS
     # ==========================================================
 
-    def statistics(self):
+    def statistics(self, user_id: str):
 
-        applications = self.get_all()
+        applications = self.get_all(user_id)
 
         total = len(applications)
 
@@ -321,4 +331,4 @@ class ApplicationService:
             if status in statistics:
                 statistics[status] += 1
 
-        return statistics
+        return statistics

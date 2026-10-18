@@ -116,6 +116,7 @@ def get_connection():
 _SQLITE_SCHEMA = """
 CREATE TABLE IF NOT EXISTS applications (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id TEXT,
     company TEXT NOT NULL,
     role TEXT NOT NULL,
     job_url TEXT,
@@ -130,6 +131,7 @@ CREATE TABLE IF NOT EXISTS applications (
 _POSTGRES_SCHEMA = """
 CREATE TABLE IF NOT EXISTS applications (
     id SERIAL PRIMARY KEY,
+    user_id TEXT,
     company TEXT NOT NULL,
     role TEXT NOT NULL,
     job_url TEXT,
@@ -150,6 +152,31 @@ def initialize_database():
 
         connection.execute(
             _POSTGRES_SCHEMA if USE_POSTGRES else _SQLITE_SCHEMA
+        )
+
+        # Older databases were created before applications belonged to a
+        # user. Add the column; old rows keep user_id NULL and are therefore
+        # visible to nobody (they have no owner).
+        if USE_POSTGRES:
+            connection.execute(
+                "ALTER TABLE applications "
+                "ADD COLUMN IF NOT EXISTS user_id TEXT"
+            )
+        else:
+            columns = [
+                row["name"]
+                for row in connection.execute(
+                    "PRAGMA table_info(applications)"
+                ).fetchall()
+            ]
+            if "user_id" not in columns:
+                connection.execute(
+                    "ALTER TABLE applications ADD COLUMN user_id TEXT"
+                )
+
+        connection.execute(
+            "CREATE INDEX IF NOT EXISTS idx_applications_user "
+            "ON applications (user_id)"
         )
 
         connection.commit()
