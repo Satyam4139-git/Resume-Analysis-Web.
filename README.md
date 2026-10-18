@@ -1,4 +1,7 @@
 CareerPilot AI — Resume Analysis & Job Search Portal
+🚀 Live Demo
+Visit the live platform: https://resume-analysis-web-frontend.vercel.app/
+The frontend is deployed on Vercel. Availability of resume analysis, job search, Google sign-in, and other backend-powered features depends on the configured API/backend services and provider credentials.
 An AI-assisted career platform built with Python, FastAPI, vanilla JavaScript, HTML, and CSS. It combines resume parsing and analysis, ATS-style scoring, job discovery, skill-gap guidance, AI review/improvement suggestions, Google sign-in, and a private job-application tracker.
 Project status: This README documents the source code in this repository archive. Provider credentials and deployment settings must be configured by each developer. External AI and job-search results depend on the availability and limits of those providers.
 
